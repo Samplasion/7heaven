@@ -1,0 +1,9 @@
+Package: com.samplasion.7heaven
+Name: 7-Heaven
+Depends: mobilesubstrate
+Version: 0.1.0
+Architecture: iphoneos-arm
+Description: Ports the iOS 7 "Free" App Store button to newer devices!
+Maintainer: Francesco Arieti
+Author: Francesco Arieti
+Section: Tweaks
