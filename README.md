@@ -10,3 +10,13 @@ _Note: this tweak is a fork of [Free Market by Zachary Thomas Paul](https://gith
 
 ![English](screenshots/en.png)
 ![Italian](screenshots/it.png)
+
+## Changelog
+
+### 0.1.0
+
+* First beta release
+
+### 0.2.0
+
+* Move away from `layoutSubviews` _(thanks to Muirey03)_
