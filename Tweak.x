@@ -2,11 +2,15 @@
 #import <math.h>
 #import <objc/runtime.h>
 
-#define IOS_VER_GT_EQ(float val) {
-  return [[[UIDevice currentDevice] systemVersion] floatValue] >= val;
+int IOS_VER_GT_EQ(float val) {
+    return [[[UIDevice currentDevice] systemVersion] floatValue] >= val;
 }
 
 @interface AppStoreDynamicTypeLabel : UILabel
+@end
+
+@interface UITraitCollection (a)
+-(NSString *)_appearanceName;
 @end
 
 @interface AppStoreOfferButton : UIControl
@@ -30,6 +34,9 @@ NSDictionary *appStoreStrings;
   // Get the button (and implicitly cast it)
   AppStoreOfferButton *btn = self;
 
+  btn.clipsToBounds = YES;
+  btn.accessibilityOfferLabel.clipsToBounds = YES;
+
   // Remove old IAP Label if it exists
   if (btn.accessibilityOfferIAPLabel && btn.accessibilityOfferIAPLabel.superview) {
     [btn.accessibilityOfferIAPLabel removeFromSuperview];
@@ -48,7 +55,7 @@ NSDictionary *appStoreStrings;
   // Set the rest of the properties: text, text color, background color
   label.text = [text isEqualToString:appStoreStrings[@"OFFER_BUTTON_TITLE_GET"]] ? [appStoreStrings[@"SEARCH_FACET_FREE"] uppercaseString] : text;
   label.textColor = accent;
-  label.backgroundColor = [UIColor colorWithRed:1 green:1 blue:1 alpha:1];
+  label.backgroundColor = [UIColor colorWithRed:1 green:1 blue:1 alpha:0];
 
   // Add the border to the label by editing its layer: color, width and corner radius
   label.layer.borderColor = [accent CGColor];
@@ -134,6 +141,9 @@ NSDictionary *appStoreStrings;
   // Get the button (and implicitly cast it)
   AppStoreOfferButton *btn = %orig;
 
+  btn.clipsToBounds = YES;
+  btn.accessibilityOfferLabel.clipsToBounds = YES;
+
   // Remove old IAP Label if it exists
   if (btn.accessibilityOfferIAPLabel && btn.accessibilityOfferIAPLabel.superview) {
     [btn.accessibilityOfferIAPLabel removeFromSuperview];
@@ -150,9 +160,14 @@ NSDictionary *appStoreStrings;
   [label setFont:[UIFont fontWithName:@"HelveticaNeue-Medium" size:13.0]];
 
   // Set the rest of the properties: text, text color, background color
-  label.text = [text isEqualToString:appStoreStrings[@"OFFER_BUTTON_TITLE_GET"]] ? [appStoreStrings[@"SEARCH_FACET_FREE"] uppercaseString] : text;
+  label.text = [label.text isEqualToString:appStoreStrings[@"OFFER_BUTTON_TITLE_GET"]] ? [appStoreStrings[@"SEARCH_FACET_FREE"] uppercaseString] : label.text;
   label.textColor = accent;
-  label.backgroundColor = [UIColor colorWithRed:1 green:1 blue:1 alpha:1];
+  int c = 1;
+  if (@available(iOS 13.0, *)) {
+    c = [[UIScreen.mainScreen.traitCollection _appearanceName] isEqual:@"UIAppearanceLight"] ? 1 : 0;
+  }
+
+  label.backgroundColor = [UIColor colorWithRed:c green:c blue:c alpha:1];
 
   // Add the border to the label by editing its layer: color, width and corner radius
   label.layer.borderColor = [accent CGColor];
@@ -161,9 +176,9 @@ NSDictionary *appStoreStrings;
 
   // If the app contains in-app purchases
   if (
-    [subtitleText isEqualToString:appStoreStrings[@"INLINE_IN_APP_PURCHASES"]] // There are in-app purchases
+    [btn.accessibilityOfferSubtitleLabel.text isEqualToString:appStoreStrings[@"INLINE_IN_APP_PURCHASES"]] // There are in-app purchases
     && ![btn.accessibilityOfferButtonString isEqualToString:appStoreStrings[@"ACCESSIBILITY_REDOWNLOAD_BUTTON"]] // The button is not the cloud with the arrow (currently broken)
-    && ![text isEqualToString:[appStoreStrings[@"SEARCH_FACET_FREE"] uppercaseString]] // The text hasn't already been covered (the button has been processed)
+    && ![label.text isEqualToString:[appStoreStrings[@"SEARCH_FACET_FREE"] uppercaseString]] // The text hasn't already been covered (the button has been processed)
     ) {
     // Hide the "In-app purchases" text
     btn.accessibilityOfferSubtitleLabel.hidden = YES;
